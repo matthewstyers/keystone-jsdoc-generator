@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { Readable } from 'stream';
 import async from 'async';
-import { writeOption } from './lib';
+import { writeOption } from './writeOption';
 
 export class KeystoneReader extends Readable {
   constructor(keystone, key) {

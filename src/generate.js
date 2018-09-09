@@ -1,11 +1,9 @@
 import async from 'async';
-// import _ from 'lodash';
 import config  from './config';
 import fs from 'fs-extra';
 import path from 'path';
 import { pipe } from 'mississippi';
-import { KeystoneReader } from './KeystoneReader';
-import { createTypeDefs } from './lib';
+import { createTypeDefs, KeystoneReader } from './lib';
 
 export default function generate(keystone, done) {
   const outdir = path.resolve(config.outdir, 'lists');
