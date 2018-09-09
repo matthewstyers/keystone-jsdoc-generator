@@ -1,12 +1,11 @@
 import async from 'async';
-import config  from './config';
 import fs from 'fs-extra';
 import path from 'path';
 import { pipe } from 'mississippi';
 import { createTypeDefs, KeystoneReader } from './lib';
 
 export default function generate(keystone, done) {
-  const outdir = path.resolve(config.outdir, 'lists');
+  const outdir = path.resolve(this.config.outdir, 'lists');
   const createRead = (list) => new KeystoneReader(keystone, list);
   const writeFiles = (cb) => async.eachOf(keystone.lists, (list, key, cEO) => {
     const outfile = path.resolve(outdir, `${key}.js`);
