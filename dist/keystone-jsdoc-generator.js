@@ -1,0 +1,1 @@
+"use strict";require("core-js/modules/es6.array.sort"),require("core-js/modules/es7.promise.finally"),require("core-js/modules/es7.symbol.async-iterator"),module.exports=require("./generate").default;
