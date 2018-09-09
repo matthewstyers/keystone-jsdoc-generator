@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { Readable } from 'stream';
 import async from 'async';
+import { writeOption } from './lib';
 
 export class KeystoneReader extends Readable {
   constructor(keystone, key) {
@@ -10,6 +11,7 @@ export class KeystoneReader extends Readable {
     this.list = keystone.lists[key];
 
     this.isReading = false;
+    this.writeOption = writeOption.bind(this);
   }
 
   _read() {
@@ -38,8 +40,7 @@ export class KeystoneReader extends Readable {
 
   /* FIELDS */
   getPath = (field) => {
-    const { path, options = {},
-      options: { default: def, required = false }} = field;
+    const { path, options: { default: def, required = false }} = field;
     const defVal = _.isFunction(def) ? '' : def;
     let Path = path;
     if (!_.isUndefined(defVal)) Path = Path.concat(`=${defVal}`);
@@ -48,7 +49,6 @@ export class KeystoneReader extends Readable {
   }
 
   writeField = (field, key, cb) => {
-    // console.log(_.omit(field, ['list', 'keystone']));
     const { options: { note, }, type
     } = field;
     this.writeLine(`\
@@ -57,25 +57,33 @@ ${note ? ` - ${note}` : ''}\
 `, cb);
   }
 
-  writeFields = (next) => {
+  /* DISPLAY */
+  writeDisplay = (value, key, cb) =>
+    this.writeLine(`@prop {String} ${key} - ${value}`, cb)
+
+  /* UNIVERSAL HANDLER */
+  createMember = (name, data, handler, next) => {
     async.series([
       this.openComment,
-      (cs) => this.writeMemberData('Fields', cs),
-      (cs) => async.eachOfSeries(this.list.fields, this.writeField, cs),
+      (cs) => this.writeMemberData(name, cs),
+      (cs) => async.eachOfSeries(data, handler, cs),
       this.closeComment,
-      (cs) => this.writeDummyConst('Fields', 'const', cs)
+      (cs) => this.writeDummyConst(name, 'const', cs)
     ], next);
   }
-
 
   startReading() {
     const key = this.key;
     const ks = this.keystone;
     const ls = this.list;
+    const { label, plural, singular, ...options } = ls.options;
+    const display = { path: ls.path, key, label, plural, singular  };
     async.series([
       (cs) => { this.push(`/** @list ${key} */\n`); cs(); },
       (cs) => this.writeDummyConst(key, 'class', cs),
-      (cs) => this.writeFields(cs)
+      (cs) => this.createMember('Options', options, this.writeOption, cs),
+      (cs) => this.createMember('Fields', ls.fields, this.writeField, cs),
+      (cs) => this.createMember('Display', display, this.writeDisplay, cs)
     ], (err) => {
       if (err) this.emit('error', err);
       else this.push(null);
