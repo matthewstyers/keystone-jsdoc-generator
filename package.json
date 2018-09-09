@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/matthewstyers/jsdoc-react-engine",
   "dependencies": {
+    "@babel/runtime": "7.0.0",
     "async": "2.5.0",
     "fs-extra": "7.0.0",
     "lodash": "4.17.10",
@@ -59,7 +60,6 @@
     "@babel/preset-env": "7.0.0",
     "@babel/preset-react": "7.0.0",
     "@babel/register": "7.0.0",
-    "@babel/runtime": "7.0.0",
     "babel-plugin-module-resolver": "3.1.1",
     "babel-preset-minify": "0.4.3"
   }
