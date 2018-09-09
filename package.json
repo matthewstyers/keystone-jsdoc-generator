@@ -1,9 +1,12 @@
 {
-  "name": "keystone-jsdoc-generator",
+  "name": "@styers/keystone-jsdoc-generator",
   "version": "0.0.1",
   "description": "JSDoc generator for keystone lists",
-  "main": "index.js",
+  "main": "dist/keystone-jsdoc-generator.js",
   "scripts": {
+    "prebuild": "NODE_ENV=development npm i",
+    "build": "NODE_ENV=production npx babel src --out-dir dist --config-file ./babel.config.production.js",
+    "postbuild": "rm -rf node_modules",
     "update": "ncu -u",
     "update-dry": "ncu"
   },
@@ -11,16 +14,29 @@
     "type": "git",
     "url": "https://github.com/matthewstyers/jsdoc-react-engine"
   },
-  "author": "MatthewStyers <mattysty@gmail.com>",
-  "licenses": [{
+  "author": "Matthew Styers <mattysty@gmail.com>",
+  "licenses": [
+    {
       "type": "Apache-2.0",
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
-    }],
+    }
+  ],
   "bugs": {
-    "url": "https://github.com/braintree/jsdoc-template"
+    "url": "https://github.com/matthewstyers/jsdoc-react-engine/issues"
   },
   "homepage": "https://github.com/matthewstyers/jsdoc-react-engine",
   "dependencies": {
+    "async": "2.5.0",
+    "fs-extra": "7.0.0",
+    "lodash": "4.17.10",
+    "mississippi": "3.0.0",
+    "flat": "4.0.0"
+  },
+  "peerDependencies": {
+    "keystone": "^4.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.0.0",
     "@babel/core": "7.0.0",
     "@babel/plugin-proposal-class-properties": "7.0.0",
     "@babel/plugin-proposal-decorators": "7.0.0",
@@ -45,13 +61,6 @@
     "@babel/register": "7.0.0",
     "@babel/runtime": "7.0.0",
     "babel-plugin-module-resolver": "3.1.1",
-    "async": "2.5.0",
-    "fs-extra": "7.0.0",
-    "lodash": "4.17.10",
-    "mississippi": "3.0.0",
-    "flat": "4.0.0"
-  },
-  "peerDependencies": {
-    "keystone": "^4.0.0"
+    "babel-preset-minify": "0.4.3"
   }
 }
