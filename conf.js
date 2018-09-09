@@ -2,10 +2,9 @@ module.exports = {
   babel: {
     ignore: [/node_modules/],
     presets: ['@babel/react', ['@babel/env', {
-      // debug: true,
       useBuiltIns: 'entry',
-      targets: { node: true },
-      modules: process.env.NODE_ENV === 'production' ? 'cjs' : 'commonjs',
+      targets: { node: '6.10' },
+      modules: process.env.NODE_ENV === 'production' ? false : 'commonjs',
       loose: true
     }]],
     env: {
@@ -36,6 +35,12 @@ module.exports = {
         ]
       },
       production: {
+        presets: [['@babel/env', {
+          useBuiltIns: 'entry',
+          targets: { node: '6.10' },
+          modules: 'commonjs',
+          loose: true
+        }]],
         plugins: [
           '@babel/plugin-proposal-object-rest-spread',
           ['@babel/plugin-proposal-class-properties', { loose: true }],
@@ -52,7 +57,6 @@ module.exports = {
           '@babel/plugin-proposal-numeric-separator',
           '@babel/plugin-proposal-throw-expressions',
           '@babel/plugin-syntax-dynamic-import',
-          '@babel/plugin-syntax-import-meta',
           '@babel/plugin-proposal-json-strings',
           ['module-resolver', {
             root: [__dirname],
