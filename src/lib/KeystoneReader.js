@@ -71,7 +71,15 @@ ${note ? ` - ${note}` : ''}\
       (cs) => this.writeDummyConst(name, 'const', cs)
     ], next);
   }
-
+  createList = (key, next) => {
+    async.series([
+      this.openComment,
+      (cs) => this.writeLine(`@list ${key}`, cs),
+      (cs) => this.writeLine(`@name ${key}`, cs),
+      this.closeComment,
+      (cs) => this.writeDummyConst(key, 'class', cs),
+    ], next);
+  }
   startReading() {
     const key = this.key;
     const ks = this.keystone;
@@ -79,8 +87,7 @@ ${note ? ` - ${note}` : ''}\
     const { label, plural, singular, ...options } = ls.options;
     const display = { path: ls.path, key, label, plural, singular  };
     async.series([
-      (cs) => { this.push(`/** @list ${key} */\n`); cs(); },
-      (cs) => this.writeDummyConst(key, 'class', cs),
+      (cs) => this.createList(key, cs),
       (cs) => this.createMember('Options', options, this.writeOption, cs),
       (cs) => this.createMember('Fields', ls.fields, this.writeField, cs),
       (cs) => this.createMember('Display', display, this.writeDisplay, cs)
