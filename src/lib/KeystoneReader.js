@@ -41,7 +41,7 @@ export class KeystoneReader extends Readable {
   /* FIELDS */
   getPath = (field) => {
     const { path, options: { default: def, required = false }} = field;
-    const defVal = _.isFunction(def) ? '' : def;
+    const defVal = _.isFunction(def) ? undefined : def;
     let Path = path;
     if (!_.isUndefined(defVal)) Path = Path.concat(`=${defVal}`);
     if (!required) Path = `[${Path}]`;
@@ -71,23 +71,41 @@ ${note ? ` - ${note}` : ''}\
       (cs) => this.writeDummyConst(name, 'const', cs)
     ], next);
   }
-  createList = (key, next) => {
+
+  writeDocConfig = (conf) => (next) => {
+    if (_.isEmpty(conf)) next();
+    else {
+      async.eachOfSeries(conf, (val, key, cb) => {
+        const tag = _.startsWith(key, '@') ? key : `@${key}`;
+        this.writeLine(`${tag} ${val}`, cb);
+      }, next);
+    }
+  }
+
+  createList = (key, docConfig = {}, next) => {
     async.series([
       this.openComment,
       (cs) => this.writeLine(`@list ${key}`, cs),
       (cs) => this.writeLine(`@name ${key}`, cs),
+      this.writeDocConfig(docConfig),
       this.closeComment,
       (cs) => this.writeDummyConst(key, 'class', cs),
     ], next);
   }
+
   startReading() {
     const key = this.key;
-    const ks = this.keystone;
+    // const ks = this.keystone;
     const ls = this.list;
-    const { label, plural, singular, ...options } = ls.options;
-    const display = { path: ls.path, key, label, plural, singular  };
+    const { label, plural, singular, jsDoc, jsdoc, ...rest } = ls.options;
+    const docConfig = jsDoc || jsdoc;
+    const options = _.pick(rest, [
+      'defaultColumns', 'defaultQuery', 'defaultSort', 'hidden', 'namePath',
+      'nocreate', 'nodelete', 'noedit', 'track'
+    ]);
+    const display = { path: ls.path, key, label, plural, singular };
     async.series([
-      (cs) => this.createList(key, cs),
+      (cs) => this.createList(key, docConfig, cs),
       (cs) => this.createMember('Options', options, this.writeOption, cs),
       (cs) => this.createMember('Fields', ls.fields, this.writeField, cs),
       (cs) => this.createMember('Display', display, this.writeDisplay, cs)
