@@ -1,6 +1,6 @@
 {
   "name": "@styers/keystone-jsdoc-generator",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "JSDoc generator for keystone lists",
   "main": "dist/keystone-jsdoc-generator.js",
   "module": "dist/keystone-jsdoc-generator.js",
